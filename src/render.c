@@ -112,6 +112,21 @@ void render_con(Con *con) {
         render_root(con, fullscreen);
     } else {
         Con *child;
+
+        /* check zoom nodes */
+        Con *zoom = NULL;
+        if (con->type != CT_OUTPUT && params.children > 0) {
+            zoom = con_get_zoom_con(con);
+        }
+
+        if (zoom) {
+            zoom->rect = params.rect;
+            x_raise_con(zoom);
+            render_con(zoom);
+            return;
+        }
+
+
         TAILQ_FOREACH (child, &(con->nodes_head), nodes) {
             assert(params.children > 0);
 

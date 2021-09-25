@@ -531,7 +531,8 @@ static void handle_button(xcb_button_press_event_t *event) {
     i3_ws *cur_ws = NULL, *clicked_ws = NULL, *ws_walk;
 
     TAILQ_FOREACH (ws_walk, walk->workspaces, tailq) {
-        int w = predict_button_width(ws_walk->name_width);
+        int name_width = ws_walk->zoomed ? ws_walk->name_z_width : ws_walk->name_width;
+        int w = predict_button_width(name_width);
         if (x >= workspace_width && x <= workspace_width + w)
             clicked_ws = ws_walk;
         if (ws_walk->visible)
@@ -2016,9 +2017,14 @@ void draw_bars(bool unhide) {
 
         if (!config.disable_ws) {
             i3_ws *ws_walk;
+            i3String *name;
+            int name_width;
+
             TAILQ_FOREACH (ws_walk, outputs_walk->workspaces, tailq) {
+                name = ws_walk->zoomed ? ws_walk->name_z : ws_walk->name;
+                name_width = ws_walk->zoomed ? ws_walk->name_z_width : ws_walk->name_width;
                 DLOG("Drawing button for WS %s at x = %d, len = %d\n",
-                     i3string_as_utf8(ws_walk->name), workspace_width, ws_walk->name_width);
+                     i3string_as_utf8(name), workspace_width, name_width);
                 color_t fg_color = colors.inactive_ws_fg;
                 color_t bg_color = colors.inactive_ws_bg;
                 color_t border_color = colors.inactive_ws_border;
@@ -2034,16 +2040,17 @@ void draw_bars(bool unhide) {
                     }
                 }
                 if (ws_walk->urgent) {
-                    DLOG("WS %s is urgent!\n", i3string_as_utf8(ws_walk->name));
+                    DLOG("WS %s is urgent!\n", i3string_as_utf8(name));
                     fg_color = colors.urgent_ws_fg;
                     bg_color = colors.urgent_ws_bg;
                     border_color = colors.urgent_ws_border;
                     unhide = true;
                 }
 
-                int w = predict_button_width(ws_walk->name_width);
+                int w = predict_button_width(name_width);
+
                 draw_button(&(outputs_walk->buffer), fg_color, bg_color, border_color,
-                            workspace_width, w, ws_walk->name_width, ws_walk->name);
+                            workspace_width, w, name_width, name);
 
                 workspace_width += w;
                 if (TAILQ_NEXT(ws_walk, tailq) != NULL)
