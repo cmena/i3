@@ -14,7 +14,7 @@
 
 #include <yajl/yajl_parse.h>
 
-#define ZOOM_INDICATOR "*Z"
+#define ZOOM_INDICATOR "*"
 
 /* A datatype to pass through the callbacks to save the state */
 struct workspaces_json_params {
