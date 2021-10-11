@@ -3,3 +3,12 @@
 
 i3 is a tiling window manager for X11. The zoom branch contains mishurov's zoom patch on i3:next. See https://github.com/mishurov/applets for details.
 
+
+# Build
+
+$ mkdir -p build && cd build
+
+$ meson ..
+
+$ ninja
+
